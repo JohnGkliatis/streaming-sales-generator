@@ -6,7 +6,7 @@ version: "3.9"
 
 services:
   spark:
-    image: "bitnami/spark:3.3.1"
+    image: "bitnami/spark:3.5.4"
     environment:
       - SPARK_MODE=master
       - SPARK_RPC_AUTHENTICATION_ENABLED=no
@@ -18,7 +18,7 @@ services:
     networks:
       - streaming-stack
   spark-worker:
-    image: "bitnami/spark:3.3.1"
+    image: "bitnami/spark:3.5.4"
     environment:
       - SPARK_MODE=worker
       - SPARK_MASTER_URL=spark://spark:7077
@@ -44,7 +44,7 @@ services:
 #    networks:
 #      - streaming-stack
   zookeeper:
-    image: "bitnami/zookeeper:3.8.0"
+    image: "bitnami/zookeeper:3.9.3"
     ports:
       - "2181:2181"
     environment:
@@ -52,7 +52,7 @@ services:
     networks:
       - streaming-stack
   kafka:
-    image: "bitnami/kafka:3.3.1"
+    image: "bitnami/kafka:3.9.0"
     ports:
       - "9092:9092"
     environment:
@@ -69,20 +69,20 @@ services:
     networks:
       - streaming-stack
   kstreams:
-    image: "garystafford/kstreams-kafka-demo:1.1.2"
+    image: "garystafford/kstreams-kafka-demo:1.0.0"
     depends_on:
-      - kakfa
+      - kafka
     networks:
       - streaming-stack
   kafka-ui:
-    image: "provectuslabs/kafka-ui:5f4bb43afd3a516176db481944fb5adb3178a40e"
+    image: "provectuslabs/kafka-ui"
     ports:
       - "9080:8080"
     environment:
       - KAFKA_CLUSTERS_0_NAME=streaming-demo
       - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka:29092
     depends_on:
-      - kakfa
+      - kafka
     networks:
       - streaming-stack
 

@@ -17,7 +17,7 @@ config.read("configuration/configuration.ini")
 # *** CONFIGURATION ***
 topic_products = config["KAFKA"]["topic_products"]
 topic_purchases = config["KAFKA"]["topic_purchases"]
-topic_stockings = config["KAFKA"]["topic_stockings"]
+topic_inventories = config["KAFKA"]["topic_inventories"]
 
 
 def main():
@@ -27,7 +27,7 @@ def main():
 def consume_messages():
     # choose any or all topics
     # topics = (topic_purchases)
-    topics = (topic_products, topic_purchases, topic_stockings)
+    topics = (topic_products, topic_purchases, topic_inventories)
 
     configs = get_configs()
 
