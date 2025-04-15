@@ -1,8 +1,18 @@
-# Gary A. Stafford (2022-12-28)
-# does not work with alpine version of base image...
+# Start from a debian slim with python support
+FROM python:3.12-slim-bullseye
+# Set up a workdir where we can put our dataflow
+WORKDIR /bytewax
+# Install bytewax and the dependencies you need here
+COPY requirements.txt requirements.txt 
+RUN python -m pip install -r requirements.txt
 
-FROM amazoncorretto:23-headless
+# Copy the dataflow in the workdir
+COPY businesslogic businesslogic
+COPY dataflow.py dataflow.py
+COPY .env .env
 
-COPY build/libs/kstreams-kafka-demo-1.1.0-all.jar /tmp/kstreams-app.jar
-
-CMD ["java", "-jar", "/tmp/kstreams-app.jar"]
+# And run it.
+# Set PYTHONUNBUFFERED to any value to make python flush stdout,
+# or you risk not seeing any output from your python scripts.
+ENV PYTHONUNBUFFERED 1
+CMD ["python", "-m", "bytewax.run", "dataflow"]

@@ -1,2 +1,3 @@
-bytewax
-python-dotenv 
+bytewax==0.21.1
+python-dotenv==1.1.0 
+confluent-kafka==2.9.0
