@@ -8,11 +8,11 @@ RUN python -m pip install -r requirements.txt
 
 # Copy the dataflow in the workdir
 COPY businesslogic businesslogic
-COPY dataflow.py dataflow.py
+COPY myflow.py myflow.py
 COPY .env .env
 
 # And run it.
 # Set PYTHONUNBUFFERED to any value to make python flush stdout,
 # or you risk not seeing any output from your python scripts.
 ENV PYTHONUNBUFFERED 1
-CMD ["python", "-m", "bytewax.run", "dataflow"]
+CMD ["python", "-m", "bytewax.run", "myflow"]

@@ -6,7 +6,7 @@ version: "3.9"
 
 services:
   spark:
-    image: "bitnami/spark:3.5.4"
+    image: "bitnami/spark:3.5.5"
     environment:
       - SPARK_MODE=master
       - SPARK_RPC_AUTHENTICATION_ENABLED=no
@@ -18,7 +18,7 @@ services:
     networks:
       - streaming-stack
   spark-worker:
-    image: "bitnami/spark:3.5.4"
+    image: "bitnami/spark:3.5.5"
     environment:
       - SPARK_MODE=worker
       - SPARK_MASTER_URL=spark://spark:7077
@@ -30,50 +30,36 @@ services:
       - SPARK_SSL_ENABLED=no
     networks:
       - streaming-stack
-#  jupyter:
-#    image: "jupyter/pyspark-notebook:spark-3.3.1"
-#    ports:
-#      - "8888:8888"
-#      - "4040-4045:4040-4045"
-#    user: root
-#    environment:
-#      NB_GID: 100
-#      GRANT_SUDO: "yes"
-#    volumes:
-#      - "${PWD}:/home/jovyan/work"
-#    networks:
-#      - streaming-stack
-  zookeeper:
-    image: "bitnami/zookeeper:3.9.3"
-    ports:
-      - "2181:2181"
-    environment:
-      - ALLOW_ANONYMOUS_LOGIN=yes
-    networks:
-      - streaming-stack
   kafka:
-    image: "bitnami/kafka:3.9.0"
+    image: docker.io/bitnami/kafka:4.0
     ports:
       - "9092:9092"
+    volumes:
+      - "kafka_data:/bitnami"
     environment:
-      - KAFKA_BROKER_ID=1
-      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,PLAINTEXT_HOST://:29092
-      - KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://127.0.0.1:9092,PLAINTEXT_HOST://kafka:29092
-      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
-      - ALLOW_PLAINTEXT_LISTENER=yes
-    #volumes:
-    #  - /tmp:/bitnami/kafka
-    depends_on:
-      - zookeeper
+      # KRaft settings
+      - KAFKA_CFG_NODE_ID=0
+      - KAFKA_CFG_PROCESS_ROLES=controller,broker
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=0@kafka:9093
+      # Listeners
+      # - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093
+      # - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://:9092
+      # - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      # - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+      # - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=PLAINTEXT
+      - KAFKA_CFG_LISTENERS=LISTENER_BOB://kafka:29092,LISTENER_FRED://kafka:9092,CONTROLLER://:9093
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=LISTENER_BOB:PLAINTEXT,LISTENER_FRED:PLAINTEXT,CONTROLLER:PLAINTEXT
+      - KAFKA_CFG_ADVERTISED_LISTENERS=LISTENER_BOB://kafka:29092,LISTENER_FRED://localhost:9092
+      - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=LISTENER_BOB
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
     networks:
       - streaming-stack
-  kstreams:
-    image: "garystafford/kstreams-kafka-demo:1.0.0"
-    depends_on:
-      - kafka
-    networks:
-      - streaming-stack
+  # kstreams:
+  #   image: "garystafford/kstreams-kafka-demo:1.0.0"
+  #   depends_on:
+  #     - kafka
+  #   networks:
+  #     - streaming-stack
   kafka-ui:
     image: "provectuslabs/kafka-ui"
     ports:
@@ -86,5 +72,8 @@ services:
     networks:
       - streaming-stack
 
+volumes:
+  kafka_data:
+  
 networks:
   streaming-stack:

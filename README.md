@@ -345,7 +345,7 @@ nohup python3 ./producer.py &
 Manage the topics from within the Kafka container:
 
 ```shell
-docker exec -it $(docker container ls --filter  name=streaming-stack_kafka.1 --format "{{.ID}}") bash
+docker exec -it $(docker container ls --filter  name=skafka.1 --format "{{.ID}}") bash
 
 export BOOTSTRAP_SERVERS="localhost:9092"
 export TOPIC_PRODUCTS="demo.products"
