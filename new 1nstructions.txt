@@ -1,0 +1,6 @@
+docker run  --network docker_streaming-stack --volume jupyter_data --name jupyter-base-notebook bitnami/jupyter-base-notebook:latest
+
+
+docker run --rm --network docker_streaming-stack --volume jupyter_data --name jupyter-base-notebook -p 8888:8888 bitnami/jupyter-base-notebook:latest -- jupyterhub-singleuser --version
+
+docker run --rm --network docker_streaming-stack -p 8888:8888 quay.io/jupyter/scipy-notebook:latest

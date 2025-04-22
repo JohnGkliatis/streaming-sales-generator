@@ -60,6 +60,14 @@ services:
   #     - kafka
   #   networks:
   #     - streaming-stack
+  jupyter:
+    image: quay.io/jupyter/datascience-notebook:latest
+    ports:
+      - "8888:8888"
+    volumes:
+      - "jupyter_data:/home/jovyan/work"
+    networks:
+      - streaming-stack
   kafka-ui:
     image: "provectuslabs/kafka-ui"
     ports:
@@ -74,6 +82,7 @@ services:
 
 volumes:
   kafka_data:
+  jupyter_data:
   
 networks:
   streaming-stack:

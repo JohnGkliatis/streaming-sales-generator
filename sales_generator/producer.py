@@ -151,7 +151,8 @@ def publish_to_kafka(topic, message):
         value_serializer=lambda v: json.dumps(vars(v)).encode("utf-8"),
         **configs,
     )
-    producer.send(topic, value=message)
+    key = topic.split('.')[1]
+    producer.send(topic, key=key.encode("utf-8"), value=message)
     print("Topic: {0}, Value: {1}".format(topic, message))
 
 
