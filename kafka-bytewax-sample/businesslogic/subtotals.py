@@ -10,7 +10,7 @@ def make_subtotal(message: KafkaSinkMessage):
         json_str = message.value.decode("utf-8")
         data = json.loads(json_str)
         purchase = domain_model.Purchase(**data)
-        return domain_model.Total(
+        return domain_model.SubTotal(
             purchase.product_id,
             purchase.transaction_time,
             1,
@@ -26,3 +26,14 @@ def make_subtotal(message: KafkaSinkMessage):
         raise
     except Exception as e:
         logger.exception(f"Unexpected error in next_batch: {e}")
+
+
+
+def calc_running_total(total : domain_model.Total, sub_total:  domain_model.SubTotal):
+    if total is None:
+        total = domain_model.Total(0, 0, 0)
+
+    total.quantities = total.quantities + sub_total.quantities
+    total.transactions = total.transactions + sub_total.transactions
+    total.sales = total.sales + sub_total.sales
+    return (total, total)

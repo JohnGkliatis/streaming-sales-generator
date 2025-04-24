@@ -2,9 +2,15 @@ from dataclasses import dataclass
 from decimal import Decimal
 
 @dataclass
-class Total:
+class SubTotal:
     product_id: str
     event_time: str
+    transactions: int
+    quantities: int
+    sales: Decimal
+
+@dataclass
+class Total:
     transactions: int
     quantities: int
     sales: Decimal
