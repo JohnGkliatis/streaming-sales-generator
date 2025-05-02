@@ -30,7 +30,7 @@ services:
       - SPARK_SSL_ENABLED=no
     networks:
       - streaming-stack
-  kafka:
+    kafka:
     image: docker.io/bitnami/kafka:4.0
     ports:
       - "9092:9092"
@@ -42,30 +42,11 @@ services:
       - KAFKA_CFG_PROCESS_ROLES=controller,broker
       - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=0@kafka:9093
       # Listeners
-      # - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093
-      # - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://:9092
-      # - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
-      # - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
-      # - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=PLAINTEXT
       - KAFKA_CFG_LISTENERS=LISTENER_BOB://kafka:29092,LISTENER_FRED://kafka:9092,CONTROLLER://:9093
       - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=LISTENER_BOB:PLAINTEXT,LISTENER_FRED:PLAINTEXT,CONTROLLER:PLAINTEXT
       - KAFKA_CFG_ADVERTISED_LISTENERS=LISTENER_BOB://kafka:29092,LISTENER_FRED://localhost:9092
       - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=LISTENER_BOB
       - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
-    networks:
-      - streaming-stack
-  # kstreams:
-  #   image: "garystafford/kstreams-kafka-demo:1.0.0"
-  #   depends_on:
-  #     - kafka
-  #   networks:
-  #     - streaming-stack
-  jupyter:
-    image: quay.io/jupyter/datascience-notebook:latest
-    ports:
-      - "8888:8888"
-    volumes:
-      - "jupyter_data:/home/jovyan/work"
     networks:
       - streaming-stack
   kafka-ui:
@@ -79,6 +60,26 @@ services:
       - kafka
     networks:
       - streaming-stack
+  ksqldb-server:
+    image: confluentinc/cp-ksqldb-server:7.9.0
+    ports:
+      - "8088:8088"
+    environment:
+      - KSQL_BOOTSTRAP_SERVERS=kafka:29092
+      - KSQL_LISTENERS=http://0.0.0.0:8088/
+      - KSQL_KSQL_SERVICE_ID=ksql_service_2_
+    depends_on:
+      - kafka
+    networks:
+      - streaming-stack
+  # jupyter:
+  #   image: quay.io/jupyter/datascience-notebook:latest
+  #   ports:
+  #     - "8888:8888"
+  #   volumes:
+  #     - "jupyter_data:/home/jovyan/work"
+  #   networks:
+  #     - streaming-stack
 
 volumes:
   kafka_data:
